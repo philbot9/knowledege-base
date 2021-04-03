@@ -1,8 +1,8 @@
 import express, { Router } from 'express'
 
-export type IndexRouterArgs = {}
+export type EntriesApiRouterArgs = {}
 
-export function indexRouter(args: IndexRouterArgs): Router {
+export function entriesApiRouter(args: EntriesApiRouterArgs): Router {
   const router = express.Router()
 
   /* GET home page. */
