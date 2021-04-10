@@ -30,3 +30,11 @@ export function fromArray<T>(arr: T[]) {
 
   return asyncIterable
 }
+
+export async function toArray<T>(iter: AsyncIterable<T>): Promise<T[]> {
+  const arr = []
+  for await (const x of iter) {
+    arr.push(x)
+  }
+  return arr
+}

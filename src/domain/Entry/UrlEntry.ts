@@ -1,5 +1,4 @@
 import { EntryType, IEntry } from './IEntry'
-import { INote } from '../Note/INote'
 import { ID } from '../util/id'
 
 export type UrlEntrySpec = {
@@ -8,24 +7,29 @@ export type UrlEntrySpec = {
   title: string
   url: string
   noteId?: ID
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export class UrlEntry implements IEntry {
-  id: ID
-  userId: ID
-  type: EntryType
-  title: string
-  url: string
-  noteId?: ID
+  readonly id: ID
+  readonly userId: ID
+  readonly type: EntryType
+  readonly title: string
+  readonly url: string
+  readonly noteId?: ID
+  readonly createdAt: Date
+  readonly updatedAt: Date
 
   constructor(spec: UrlEntrySpec) {
     this.type = 'url'
-
     this.id = spec.id
     this.userId = spec.userId
     this.title = spec.title
     this.url = spec.url
     this.noteId = spec.noteId
+    this.createdAt = spec.createdAt || new Date()
+    this.updatedAt = spec.updatedAt || new Date()
   }
 
   toJson(): string {
@@ -35,7 +39,9 @@ export class UrlEntry implements IEntry {
       type: this.type,
       title: this.title,
       url: this.url,
-      noteId: this.noteId
+      noteId: this.noteId,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
     })
   }
 }

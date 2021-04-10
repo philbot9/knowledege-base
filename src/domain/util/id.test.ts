@@ -1,13 +1,20 @@
 import * as id from './id'
 
 describe('/util/id', () => {
-  it('generateId()', () => {
-    const id1 = id.generateId()
-    const id2 = id.generateId()
+  describe('generateId()', () => {
+    it('generates a valid id', () => {
+      const generated = id.generateId()
+      expect(id.normalize(generated)).toBe(generated)
+    })
 
-    expect(id.normalize(id1)).toEqual(id1)
-    expect(id.normalize(id2)).toEqual(id2)
-    expect(id1).not.toEqual(id2)
+    it('ids are unique', () => {
+      const id1 = id.generateId()
+      const id2 = id.generateId()
+
+      expect(id.normalize(id1)).toEqual(id1)
+      expect(id.normalize(id2)).toEqual(id2)
+      expect(id1).not.toEqual(id2)
+    })
   })
 
   describe('validate()', () => {

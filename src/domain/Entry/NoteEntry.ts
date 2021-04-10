@@ -6,14 +6,18 @@ export type NoteEntrySpec = {
   userId: ID
   title: string
   noteId: ID
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export class NoteEntry implements IEntry {
-  id: ID
-  userId: ID
-  type: EntryType
-  title: string
-  noteId: ID
+  readonly id: ID
+  readonly userId: ID
+  readonly type: EntryType
+  readonly title: string
+  readonly noteId: ID
+  readonly createdAt: Date
+  readonly updatedAt: Date
 
   constructor(spec: NoteEntrySpec) {
     this.type = 'note'
@@ -22,6 +26,8 @@ export class NoteEntry implements IEntry {
     this.userId = spec.userId
     this.title = spec.title
     this.noteId = spec.noteId
+    this.createdAt = spec.createdAt || new Date()
+    this.updatedAt = spec.updatedAt || new Date()
   }
 
   toJson(): string {
@@ -30,7 +36,9 @@ export class NoteEntry implements IEntry {
       userId: this.userId,
       type: this.type,
       title: this.title,
-      noteId: this.noteId
+      noteId: this.noteId,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
     })
   }
 }

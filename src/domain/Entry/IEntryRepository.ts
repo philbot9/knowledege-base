@@ -1,3 +1,4 @@
+import { ListArgs } from '../repositories'
 import { ID } from '../util/id'
 import { IEntry } from './IEntry'
 
@@ -6,6 +7,6 @@ export interface IEntryRepository {
   read(id: ID): Promise<IEntry>
   update(id: ID, patch: object): Promise<IEntry>
   delete(id: ID): Promise<ID>
-  listAll(): Promise<AsyncIterable<IEntry>>
-  listByUser(userId: ID): Promise<AsyncIterable<IEntry>>
+  list(args?: ListArgs): Promise<AsyncIterable<IEntry>>
+  listByUser(userId: ID, args?: ListArgs): Promise<AsyncIterable<IEntry>>
 }

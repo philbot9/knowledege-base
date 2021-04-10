@@ -1,4 +1,4 @@
-import { fromIterable, fromArray } from './async-iterator'
+import { fromIterable, fromArray, toArray } from './async-iterator'
 
 describe('async-iterator', () => {
   it('fromIterable()', async () => {
@@ -24,5 +24,10 @@ describe('async-iterator', () => {
     }
 
     expect(result).toEqual(arr)
+  })
+
+  it('toArray()', async () => {
+    const iter = fromArray([1, 2, 3])
+    expect(toArray(iter)).resolves.toEqual([1, 2, 3])
   })
 })

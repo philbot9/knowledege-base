@@ -1,3 +1,4 @@
+import { ListArgs } from '../repositories'
 import { ID } from '../util/id'
 import { INote } from './INote'
 
@@ -6,5 +7,5 @@ export interface INoteRepository {
   read(id: ID): Promise<INote>
   update(id: ID, patch: object): Promise<INote>
   delete(id: ID): Promise<ID>
-  listAll(): Promise<INote[]>
+  list(args?: ListArgs): Promise<AsyncIterable<INote>>
 }
