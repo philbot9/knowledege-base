@@ -7,7 +7,10 @@ export function indexRouter(args: IndexRouterArgs): Router {
 
   /* GET home page. */
   router.get('/', function (req, res, next) {
-    res.render('index', { title: 'Express' })
+    res.render('index', {
+      title: 'Owby',
+      user: false
+    })
   })
 
   return router

@@ -1,0 +1,59 @@
+<header class="header">
+  <section class="container">
+    <div class="row">
+      <div class="column column-0 column-logo">
+        <a class="link logo" href="/">
+          <i data-eva="bulb" data-eva-height="32" data-eva-width="32"></i>
+        </a>
+      </div>
+
+      <div class="column column-75">
+        <% if (user) { %>
+        <form class="search">
+          <input
+            class="search-input"
+            placeholder="Search"
+            id="search"
+            name="search"
+            type="search"
+            value=""
+          />
+        </form>
+        <% } %>
+      </div>
+
+      <div class="column column-0">
+        <nav class="nav">
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a
+                class="link"
+                title="Github"
+                href="https://github.com"
+                target="__blank"
+              >
+                <i data-eva="github"></i>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <% if (user) { %>
+              <a class="link" href="/profile">
+                <i data-eva="person"></i>
+              </a>
+              <% } else { %>
+              <a class="link" href="/signin">
+                <i data-eva="log-in"></i>
+              </a>
+              <% } %>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </section>
+</header>
+
+<script>
+  eva.replace()
+</script>

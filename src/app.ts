@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import logger from 'morgan'
 
 import { indexRouter } from './routes/index'
+import { signinRouter } from './routes/signin'
 import { isDev } from './util/is-dev'
 import { config } from './util/config'
 
@@ -13,6 +14,7 @@ export async function buildApp() {
   const app = setupExpressApp()
 
   app.use('/', indexRouter({}))
+  app.use('/signin', signinRouter({}))
 
   installNotFoundRoute(app)
   installErrorRoute(app)
@@ -30,7 +32,7 @@ function setupExpressApp(): Application {
   app.use(logger('dev'))
   app.use(express.json())
   app.use(express.urlencoded({ extended: false }))
-  app.use(helmet())
+  app.use(helmet({ contentSecurityPolicy: false }))
 
   const { cookieKeys, domain } = config()
 
