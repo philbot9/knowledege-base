@@ -8,7 +8,8 @@
     "test": "jest --coverage",
     "dev": "npm-run-all --parallel watch:*",
     "watch:build": "tsc --watch",
-    "watch:start": "nodemon --watch dist --exec 'npm start'"
+    "watch:start": "nodemon --watch dist --exec 'npm start'",
+    "clean": "rm -rf dist/"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

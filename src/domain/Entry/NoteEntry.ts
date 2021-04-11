@@ -1,33 +1,21 @@
-import { EntryType, IEntry } from './IEntry'
+import { Entry, EntrySpec, EntryType } from './Entry'
 import { ID } from '../util/id'
 
 export type NoteEntrySpec = {
   id: ID
   userId: ID
-  title: string
   noteId: ID
+  title: string
   createdAt?: Date
   updatedAt?: Date
 }
 
-export class NoteEntry implements IEntry {
-  readonly id: ID
-  readonly userId: ID
-  readonly type: EntryType
-  readonly title: string
+export class NoteEntry extends Entry {
   readonly noteId: ID
-  readonly createdAt: Date
-  readonly updatedAt: Date
 
   constructor(spec: NoteEntrySpec) {
-    this.type = 'note'
-
-    this.id = spec.id
-    this.userId = spec.userId
-    this.title = spec.title
+    super({ ...spec, type: 'note' })
     this.noteId = spec.noteId
-    this.createdAt = spec.createdAt || new Date()
-    this.updatedAt = spec.updatedAt || new Date()
   }
 
   toJson(): string {

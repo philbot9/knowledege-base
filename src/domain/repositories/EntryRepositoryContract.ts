@@ -1,6 +1,6 @@
 import R from 'ramda'
 
-import { IEntry } from '../Entry/IEntry'
+import { Entry } from '../Entry/Entry'
 import { IEntryRepository } from '../Entry/IEntryRepository'
 import { NoteEntry } from '../Entry/NoteEntry'
 import { IException } from '../exceptions/IException'
@@ -9,7 +9,7 @@ import { generateId } from '../util/id'
 
 export default function (repo: IEntryRepository) {
   describe('create', () => {
-    const entry: IEntry = new NoteEntry({
+    const entry: Entry = new NoteEntry({
       id: generateId(),
       title: 'Test',
       userId: generateId(),
@@ -38,7 +38,7 @@ export default function (repo: IEntryRepository) {
   })
 
   describe('read', () => {
-    const entry: IEntry = new NoteEntry({
+    const entry: Entry = new NoteEntry({
       id: generateId(),
       title: 'Test',
       userId: generateId(),
@@ -65,7 +65,7 @@ export default function (repo: IEntryRepository) {
   })
 
   describe('update', () => {
-    const entry: IEntry = new NoteEntry({
+    const entry: Entry = new NoteEntry({
       id: generateId(),
       title: 'Test',
       userId: generateId(),
@@ -98,7 +98,7 @@ export default function (repo: IEntryRepository) {
   })
 
   describe('update', () => {
-    const entry: IEntry = new NoteEntry({
+    const entry: Entry = new NoteEntry({
       id: generateId(),
       title: 'Test',
       userId: generateId(),
@@ -134,7 +134,7 @@ export default function (repo: IEntryRepository) {
   })
 
   describe('delete', () => {
-    const entry: IEntry = new NoteEntry({
+    const entry: Entry = new NoteEntry({
       id: generateId(),
       title: 'Test',
       userId: generateId(),
@@ -155,7 +155,7 @@ export default function (repo: IEntryRepository) {
   })
 
   describe('list', () => {
-    const entries: IEntry[] = []
+    const entries: Entry[] = []
     beforeAll(async () => {
       for (let i = 0; i < 10; i++) {
         entries.push(
@@ -229,9 +229,9 @@ export default function (repo: IEntryRepository) {
   })
 
   describe('listByUser', () => {
-    const entries: IEntry[] = []
+    const entries: Entry[] = []
     const userId = generateId()
-    const userEntries: IEntry[] = []
+    const userEntries: Entry[] = []
     beforeAll(async () => {
       for (let i = 0; i < 30; i++) {
         entries.push(

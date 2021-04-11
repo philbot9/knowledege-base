@@ -12,7 +12,8 @@ describe('config', () => {
 
     it('builds default config', () => {
       expect(config(true)).toMatchObject({
-        cookieKeys: ['dev_cookie_key']
+        cookieKeys: ['dev_cookie_key'],
+        domain: 'localhost'
       })
     })
 
@@ -45,17 +46,24 @@ describe('config', () => {
   })
 
   describe('prod', () => {
-    beforeEach(() =>
+    beforeEach(() => {
       // @ts-ignore
       isDev.mockReturnValue(false)
-    )
 
-    it('uses env cookie key', () => {
-      global.process.env['COOKIE_KEY'] = 'test_cookie_key'
-      expect(config(true)).toMatchObject({
-        cookieKeys: ['test_cookie_key']
-      })
+      global.process.env['DOMAIN'] = 'test.com'
+      global.process.env['COOKIE_KEY'] = 'test_key'
+    })
+
+    afterEach(() => {
+      delete global.process.env['DOMAIN']
       delete global.process.env['COOKIE_KEY']
+    })
+
+    it('builds valid config', () => {
+      expect(config(true)).toMatchObject({
+        cookieKeys: ['test_key'],
+        domain: 'test.com'
+      })
     })
 
     it('supports multiple cookie keys', () => {
@@ -73,7 +81,13 @@ describe('config', () => {
     })
 
     it('throws if cookie key is missing', () => {
-      expect(() => config(true)).toThrowError(/required/)
+      delete global.process.env['COOKIE_KEY']
+      expect(() => config(true)).toThrowError(/COOKIE_KEY/)
+    })
+
+    it('throws if domain is missing', () => {
+      delete global.process.env['DOMAIN']
+      expect(() => config(true)).toThrowError(/DOMAIN/)
     })
   })
 })

@@ -1,4 +1,4 @@
-import { INote } from '../Entry/INote'
+import { Note } from '../Entry/Note'
 import { INoteRepository } from '../Entry/INoteRepository'
 import { RecordAlreadyExistsException } from '../exceptions/RecordAlreadyExistsException'
 import { RecordNotFoundException } from '../exceptions/RecordNotFoundException'
@@ -7,9 +7,9 @@ import * as asyncIterator from '../../util/async-iterator'
 import { ListArgs, SortSpec } from '.'
 
 export class NoteMemoryRepository implements INoteRepository {
-  data: Map<ID, INote> = new Map()
+  data: Map<ID, Note> = new Map()
 
-  async create(entry: INote): Promise<INote> {
+  async create(entry: Note): Promise<Note> {
     if (this.data.has(entry.id)) {
       throw new RecordAlreadyExistsException(
         'Entry with id already exists: ' + entry.id
@@ -20,12 +20,12 @@ export class NoteMemoryRepository implements INoteRepository {
     return entry
   }
 
-  async read(id: string): Promise<INote> {
+  async read(id: string): Promise<Note> {
     this.existsGuard(id)
     return this.data.get(id)!
   }
 
-  async update(id: string, patch: object): Promise<INote> {
+  async update(id: string, patch: object): Promise<Note> {
     this.existsGuard(id)
 
     const entry = this.data.get(id)!
@@ -41,12 +41,12 @@ export class NoteMemoryRepository implements INoteRepository {
     return id
   }
 
-  async list(args?: ListArgs): Promise<AsyncIterable<INote>> {
+  async list(args?: ListArgs): Promise<AsyncIterable<Note>> {
     const offset = args?.offset
     const limit = args?.limit
     const sort = args?.sort
 
-    let entries: INote[] = []
+    let entries: Note[] = []
     for (const e of this.data.values()) {
       entries.push(e)
     }
@@ -67,8 +67,8 @@ export class NoteMemoryRepository implements INoteRepository {
   }
 
   // Naive sort algo, but it'll do for testing
-  private sort(entries: INote[], spec: SortSpec) {
-    return entries.sort((a: INote, b: INote) => {
+  private sort(entries: Note[], spec: SortSpec) {
+    return entries.sort((a: Note, b: Note) => {
       for (const key in spec) {
         // @ts-ignore
         if (a[key] === b[key]) {
@@ -90,10 +90,10 @@ export class NoteMemoryRepository implements INoteRepository {
   }
 
   private applyLimits(
-    entries: INote[],
+    entries: Note[],
     limit?: number,
     offset?: number
-  ): INote[] {
+  ): Note[] {
     if (offset && limit) {
       return entries.slice(offset, offset + limit)
     } else if (offset) {

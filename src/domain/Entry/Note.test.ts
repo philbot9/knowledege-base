@@ -2,7 +2,7 @@ import { generateId } from '../util/id'
 import { Note } from './Note'
 
 describe('Note', () => {
-  it('instantiate', async () => {
+  it('instantiates', async () => {
     const note = new Note({
       id: generateId(),
       body: 'Body 1',

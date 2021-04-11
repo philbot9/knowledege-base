@@ -1,15 +1,15 @@
-import { Entry } from '../Entry/Entry'
-import { IEntryRepository } from '../Entry/IEntryRepository'
+import { User } from '../User/User'
+import { IUserRepository } from '../User/IUserRepository'
 import { RecordAlreadyExistsException } from '../exceptions/RecordAlreadyExistsException'
 import { RecordNotFoundException } from '../exceptions/RecordNotFoundException'
 import { ID } from '../util/id'
 import * as asyncIterator from '../../util/async-iterator'
 import { ListArgs, SortSpec } from '.'
 
-export class EntryMemoryRepository implements IEntryRepository {
-  data: Map<ID, Entry> = new Map()
+export class UserMemoryRepository implements IUserRepository {
+  data: Map<ID, User> = new Map()
 
-  async create(entry: Entry): Promise<Entry> {
+  async create(entry: User): Promise<User> {
     if (this.data.has(entry.id)) {
       throw new RecordAlreadyExistsException(
         'Entry with id already exists: ' + entry.id
@@ -20,12 +20,12 @@ export class EntryMemoryRepository implements IEntryRepository {
     return entry
   }
 
-  async read(id: string): Promise<Entry> {
+  async read(id: string): Promise<User> {
     this.existsGuard(id)
     return this.data.get(id)!
   }
 
-  async update(id: string, patch: object): Promise<Entry> {
+  async update(id: string, patch: object): Promise<User> {
     this.existsGuard(id)
 
     const entry = this.data.get(id)!
@@ -41,38 +41,14 @@ export class EntryMemoryRepository implements IEntryRepository {
     return id
   }
 
-  async list(args?: ListArgs): Promise<AsyncIterable<Entry>> {
+  async list(args?: ListArgs): Promise<AsyncIterable<User>> {
     const offset = args?.offset
     const limit = args?.limit
     const sort = args?.sort
 
-    let entries: Entry[] = []
+    let entries: User[] = []
     for (const e of this.data.values()) {
       entries.push(e)
-    }
-
-    if (sort) {
-      entries = this.sort(entries, sort)
-    }
-
-    entries = this.applyLimits(entries, limit, offset)
-
-    return asyncIterator.fromArray(entries)
-  }
-
-  async listByUser(
-    userId: ID,
-    args: ListArgs = {}
-  ): Promise<AsyncIterable<Entry>> {
-    const offset = args?.offset
-    const limit = args?.limit
-    const sort = args?.sort
-
-    let entries: Entry[] = []
-    for (const e of this.data.values()) {
-      if (e.userId === userId) {
-        entries.push(e)
-      }
     }
 
     if (sort) {
@@ -91,8 +67,8 @@ export class EntryMemoryRepository implements IEntryRepository {
   }
 
   // Naive sort algo, but it'll do for testing
-  private sort(entries: Entry[], spec: SortSpec) {
-    return entries.sort((a: Entry, b: Entry) => {
+  private sort(entries: User[], spec: SortSpec) {
+    return entries.sort((a: User, b: User) => {
       for (const key in spec) {
         // @ts-ignore
         if (a[key] === b[key]) {
@@ -114,10 +90,10 @@ export class EntryMemoryRepository implements IEntryRepository {
   }
 
   private applyLimits(
-    entries: Entry[],
+    entries: User[],
     limit?: number,
     offset?: number
-  ): Entry[] {
+  ): User[] {
     if (offset && limit) {
       return entries.slice(offset, offset + limit)
     } else if (offset) {

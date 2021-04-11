@@ -4,15 +4,16 @@ const DEV_COOKIE_KEY = 'dev_cookie_key'
 
 export type Config = {
   cookieKeys: string[]
+  domain: string
 }
 
 let _config: Config
-
 export function config(rebuild = false): Config {
   if (_config && !rebuild) return _config
 
   _config = {
-    cookieKeys: getCookieKeys()
+    cookieKeys: getCookieKeys(),
+    domain: getRequiredProductionEnv('DOMAIN') || 'localhost'
   }
 
   return _config

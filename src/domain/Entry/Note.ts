@@ -1,5 +1,7 @@
+import { IEntity } from '../repositories/IEntity'
 import { ID } from '../util/id'
-import { INote, NoteFormat } from './INote'
+
+export type NoteFormat = 'text' | 'markdown' | 'html'
 
 export type NoteSpec = {
   id: ID
@@ -9,7 +11,7 @@ export type NoteSpec = {
   updatedAt?: Date
 }
 
-export class Note implements INote {
+export class Note implements IEntity {
   id: string
   format: NoteFormat
   body: string

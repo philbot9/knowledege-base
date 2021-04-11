@@ -1,10 +1,13 @@
 import createError from 'http-errors'
 import express, { Application, NextFunction, Request, Response } from 'express'
 import path from 'path'
-import cookieParser from 'cookie-parser'
+import cookieSession from 'cookie-session'
+import helmet from 'helmet'
 import logger from 'morgan'
 
 import { indexRouter } from './routes/index'
+import { isDev } from './util/is-dev'
+import { config } from './util/config'
 
 export async function buildApp() {
   const app = setupExpressApp()
@@ -27,7 +30,22 @@ function setupExpressApp(): Application {
   app.use(logger('dev'))
   app.use(express.json())
   app.use(express.urlencoded({ extended: false }))
-  app.use(cookieParser())
+  app.use(helmet())
+
+  const { cookieKeys, domain } = config()
+
+  app.use(
+    cookieSession({
+      name: 'session',
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+      path: 'kb/session',
+      secureProxy: !isDev(),
+      httpOnly: true,
+      keys: cookieKeys,
+      domain
+    })
+  )
+
   app.use(express.static(path.join(__dirname, '../public')))
 
   return app

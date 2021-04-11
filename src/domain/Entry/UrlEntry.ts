@@ -1,4 +1,4 @@
-import { EntryType, IEntry } from './IEntry'
+import { Entry } from './Entry'
 import { ID } from '../util/id'
 
 export type UrlEntrySpec = {
@@ -11,25 +11,14 @@ export type UrlEntrySpec = {
   updatedAt?: Date
 }
 
-export class UrlEntry implements IEntry {
-  readonly id: ID
-  readonly userId: ID
-  readonly type: EntryType
-  readonly title: string
+export class UrlEntry extends Entry {
   readonly url: string
   readonly noteId?: ID
-  readonly createdAt: Date
-  readonly updatedAt: Date
 
   constructor(spec: UrlEntrySpec) {
-    this.type = 'url'
-    this.id = spec.id
-    this.userId = spec.userId
-    this.title = spec.title
+    super({ ...spec, type: 'url' })
     this.url = spec.url
     this.noteId = spec.noteId
-    this.createdAt = spec.createdAt || new Date()
-    this.updatedAt = spec.updatedAt || new Date()
   }
 
   toJson(): string {
