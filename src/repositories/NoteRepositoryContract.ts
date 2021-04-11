@@ -1,10 +1,10 @@
 import R from 'ramda'
 
-import { INoteRepository } from '../Entry/INoteRepository'
-import { IException } from '../exceptions/IException'
-import { Note } from '../Entry/Note'
-import { toArray } from '../../util/async-iterator'
-import { generateId } from '../util/id'
+import { INoteRepository } from '../domain/Entry/INoteRepository'
+import { IException } from '../domain/exceptions/IException'
+import { Note } from '../domain/Entry/Note'
+import { toArray } from '../util/async-iterator'
+import { generateId } from '../domain/util/id'
 
 export default function (repo: INoteRepository) {
   describe('create', () => {
@@ -21,15 +21,15 @@ export default function (repo: INoteRepository) {
     })
 
     it('creates a new note', async () => {
-      await expect(repo.create(note)).resolves.toEqual(note)
+      await expect(repo.create(note.id, note)).resolves.toEqual(note)
       await expect(repo.read(note.id)).resolves.toEqual(note)
     })
 
     it('fails if id already in use', async () => {
       expect.assertions(2)
-      await expect(repo.create(note)).resolves.toEqual(note)
+      await expect(repo.create(note.id, note)).resolves.toEqual(note)
 
-      await repo.create(note).catch((e: IException) => {
+      await repo.create(note.id, note).catch((e: IException) => {
         expect(e.name).toBe('RecordAlreadyExists')
       })
     })
@@ -49,7 +49,7 @@ export default function (repo: INoteRepository) {
     })
 
     it('reads an note', async () => {
-      await expect(repo.create(note)).resolves.toEqual(note)
+      await expect(repo.create(note.id, note)).resolves.toEqual(note)
       await expect(repo.read(note.id)).resolves.toEqual(note)
     })
 
@@ -75,7 +75,7 @@ export default function (repo: INoteRepository) {
     })
 
     it('updates an note', async () => {
-      await expect(repo.create(note)).resolves.toEqual(note)
+      await expect(repo.create(note.id, note)).resolves.toEqual(note)
       await expect(repo.update(note.id, { body: 'Changed' })).resolves.toEqual({
         ...note,
         body: 'Changed'
@@ -108,7 +108,7 @@ export default function (repo: INoteRepository) {
     })
 
     it('updates an note', async () => {
-      await expect(repo.create(note)).resolves.toEqual(note)
+      await expect(repo.create(note.id, note)).resolves.toEqual(note)
       await expect(repo.update(note.id, { body: 'Changed' })).resolves.toEqual({
         ...note,
         body: 'Changed'
@@ -135,7 +135,7 @@ export default function (repo: INoteRepository) {
     })
 
     it('deletes an etry', async () => {
-      await expect(repo.create(note)).resolves.toEqual(note)
+      await expect(repo.create(note.id, note)).resolves.toEqual(note)
       await expect(repo.delete(note.id)).resolves.toEqual(note.id)
     })
 
@@ -158,7 +158,7 @@ export default function (repo: INoteRepository) {
             format: 'text'
           })
         )
-        await repo.create(notes[i])
+        await repo.create(notes[i].id, notes[i])
       }
     })
 
@@ -171,26 +171,30 @@ export default function (repo: INoteRepository) {
     it('lists notes', async () => {
       const iter = await repo.list()
       const res = await toArray(iter)
-      expect(res).toEqual(notes)
+
+      expect(res).toHaveLength(notes.length)
+      res.forEach(r => {
+        const n = notes.find(n => n.id === r.id)
+        expect(r).toEqual(n)
+      })
     })
 
     it('supports limit', async () => {
       const iter = await repo.list({ limit: 5 })
       const res = await toArray(iter)
       expect(res).toHaveLength(5)
-      expect(res).toEqual(notes.slice(0, 5))
     })
 
     it('supports offset', async () => {
       const iter = await repo.list({ offset: 5 })
       const res = await toArray(iter)
-      expect(res).toEqual(notes.slice(5))
+      expect(res).toHaveLength(5)
     })
 
     it('supports offset and limit', async () => {
       const iter = await repo.list({ offset: 5, limit: 2 })
       const res = await toArray(iter)
-      expect(res).toEqual(notes.slice(5, 7))
+      expect(res).toHaveLength(2)
     })
 
     it('supports sort', async () => {

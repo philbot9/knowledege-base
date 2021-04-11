@@ -1,10 +1,10 @@
 import R from 'ramda'
 
-import { IUserRepository } from '../User/IUserRepository'
-import { IException } from '../exceptions/IException'
-import { User } from '../User/User'
-import { toArray } from '../../util/async-iterator'
-import { generateId } from '../util/id'
+import { IUserRepository } from '../domain/User/IUserRepository'
+import { IException } from '../domain/exceptions/IException'
+import { User } from '../domain/User/User'
+import { toArray } from '../util/async-iterator'
+import { generateId } from '../domain/util/id'
 
 export default function (repo: IUserRepository) {
   describe('create', () => {
@@ -22,15 +22,15 @@ export default function (repo: IUserRepository) {
     })
 
     it('creates a new user', async () => {
-      await expect(repo.create(user)).resolves.toEqual(user)
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
       await expect(repo.read(user.id)).resolves.toEqual(user)
     })
 
     it('fails if id already in use', async () => {
       expect.assertions(2)
-      await expect(repo.create(user)).resolves.toEqual(user)
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
 
-      await repo.create(user).catch((e: IException) => {
+      await repo.create(user.id, user).catch((e: IException) => {
         expect(e.name).toBe('RecordAlreadyExists')
       })
     })
@@ -51,7 +51,7 @@ export default function (repo: IUserRepository) {
     })
 
     it('reads an user', async () => {
-      await expect(repo.create(user)).resolves.toEqual(user)
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
       await expect(repo.read(user.id)).resolves.toEqual(user)
     })
 
@@ -78,7 +78,7 @@ export default function (repo: IUserRepository) {
     })
 
     it('updates an user', async () => {
-      await expect(repo.create(user)).resolves.toEqual(user)
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
       await expect(
         repo.update(user.id, { lastName: 'Changed' })
       ).resolves.toEqual({
@@ -116,7 +116,7 @@ export default function (repo: IUserRepository) {
     })
 
     it('updates an user', async () => {
-      await expect(repo.create(user)).resolves.toEqual(user)
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
       await expect(
         repo.update(user.id, { lastName: 'Changed' })
       ).resolves.toEqual({
@@ -148,7 +148,7 @@ export default function (repo: IUserRepository) {
     })
 
     it('deletes an etry', async () => {
-      await expect(repo.create(user)).resolves.toEqual(user)
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
       await expect(repo.delete(user.id)).resolves.toEqual(user.id)
     })
 
@@ -172,7 +172,7 @@ export default function (repo: IUserRepository) {
             lastName: `User ${i}`
           })
         )
-        await repo.create(users[i])
+        await repo.create(users[i].id, users[i])
       }
     })
 
@@ -185,26 +185,30 @@ export default function (repo: IUserRepository) {
     it('lists users', async () => {
       const iter = await repo.list()
       const res = await toArray(iter)
-      expect(res).toEqual(users)
+
+      expect(res).toHaveLength(users.length)
+      res.forEach(r => {
+        const n = users.find(n => n.id === r.id)
+        expect(r).toEqual(n)
+      })
     })
 
     it('supports limit', async () => {
       const iter = await repo.list({ limit: 5 })
       const res = await toArray(iter)
       expect(res).toHaveLength(5)
-      expect(res).toEqual(users.slice(0, 5))
     })
 
     it('supports offset', async () => {
       const iter = await repo.list({ offset: 5 })
       const res = await toArray(iter)
-      expect(res).toEqual(users.slice(5))
+      expect(res).toHaveLength(5)
     })
 
     it('supports offset and limit', async () => {
       const iter = await repo.list({ offset: 5, limit: 2 })
       const res = await toArray(iter)
-      expect(res).toEqual(users.slice(5, 7))
+      expect(res).toHaveLength(2)
     })
 
     it('supports sort', async () => {

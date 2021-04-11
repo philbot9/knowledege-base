@@ -1,4 +1,4 @@
-import { IEntity } from '../repositories/IEntity'
+import { IEntity } from '../repository/IEntity'
 import { ID } from '../util/id'
 
 export type NoteFormat = 'text' | 'markdown' | 'html'

@@ -1,9 +1,9 @@
-import { ListArgs } from '../repositories'
+import { ListArgs } from '../repository'
 import { ID } from '../util/id'
 import { Entry } from './Entry'
 
 export interface IEntryRepository {
-  create(entry: Entry): Promise<Entry>
+  create(id: ID, entry: Entry): Promise<Entry>
   read(id: ID): Promise<Entry>
   update(id: ID, patch: object): Promise<Entry>
   delete(id: ID): Promise<ID>

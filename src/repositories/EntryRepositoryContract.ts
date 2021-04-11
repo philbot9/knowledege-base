@@ -1,13 +1,14 @@
 import R from 'ramda'
 
-import { Entry } from '../Entry/Entry'
-import { IEntryRepository } from '../Entry/IEntryRepository'
-import { NoteEntry } from '../Entry/NoteEntry'
-import { IException } from '../exceptions/IException'
-import { toArray } from '../../util/async-iterator'
-import { generateId } from '../util/id'
+import { Entry } from '../domain/Entry/Entry'
+import { IEntryRepository } from '../domain/Entry/IEntryRepository'
+import { NoteEntry } from '../domain/Entry/NoteEntry'
+import { IException } from '../domain/exceptions/IException'
+import { toArray } from '../util/async-iterator'
+import { generateId } from '../domain/util/id'
+import { UrlEntry } from '../domain/Entry/UrlEntry'
 
-export default function (repo: IEntryRepository) {
+export default async function (repo: IEntryRepository) {
   describe('create', () => {
     const entry: Entry = new NoteEntry({
       id: generateId(),
@@ -23,17 +24,31 @@ export default function (repo: IEntryRepository) {
     })
 
     it('creates a new entry', async () => {
-      await expect(repo.create(entry)).resolves.toEqual(entry)
+      await expect(repo.create(entry.id, entry)).resolves.toEqual(entry)
       await expect(repo.read(entry.id)).resolves.toEqual(entry)
     })
 
     it('fails if id already in use', async () => {
       expect.assertions(2)
-      await expect(repo.create(entry)).resolves.toEqual(entry)
+      await expect(repo.create(entry.id, entry)).resolves.toEqual(entry)
 
-      await repo.create(entry).catch((e: IException) => {
+      await repo.create(entry.id, entry).catch((e: IException) => {
         expect(e.name).toBe('RecordAlreadyExists')
       })
+    })
+
+    it('supports UrlEntry', async () => {
+      const urlEntry = new UrlEntry({
+        id: generateId(),
+        title: 'TestUrl',
+        userId: generateId(),
+        url: 'http://test.com'
+      })
+      await expect(repo.create(urlEntry.id, urlEntry)).resolves.toEqual(
+        urlEntry
+      )
+      await expect(repo.read(urlEntry.id)).resolves.toEqual(urlEntry)
+      await expect(repo.delete(urlEntry.id)).resolves.toEqual(urlEntry.id)
     })
   })
 
@@ -52,7 +67,7 @@ export default function (repo: IEntryRepository) {
     })
 
     it('reads an entry', async () => {
-      await expect(repo.create(entry)).resolves.toEqual(entry)
+      await expect(repo.create(entry.id, entry)).resolves.toEqual(entry)
       await expect(repo.read(entry.id)).resolves.toEqual(entry)
     })
 
@@ -79,46 +94,10 @@ export default function (repo: IEntryRepository) {
     })
 
     it('updates an entry', async () => {
-      await expect(repo.create(entry)).resolves.toEqual(entry)
+      await expect(repo.create(entry.id, entry)).resolves.toEqual(entry)
       await expect(
         repo.update(entry.id, { title: 'Changed' })
       ).resolves.toEqual({ ...entry, title: 'Changed' })
-      await expect(repo.read(entry.id)).resolves.toEqual({
-        ...entry,
-        title: 'Changed'
-      })
-    })
-
-    it('fails if entry does not exist', async () => {
-      expect.assertions(1)
-      await repo.update('test', { title: 'Failed' }).catch((e: IException) => {
-        expect(e.name).toBe('RecordNotFound')
-      })
-    })
-  })
-
-  describe('update', () => {
-    const entry: Entry = new NoteEntry({
-      id: generateId(),
-      title: 'Test',
-      userId: generateId(),
-      noteId: generateId()
-    })
-
-    afterEach(async () => {
-      try {
-        await repo.delete(entry.id)
-      } catch (e) {}
-    })
-
-    it('updates an entry', async () => {
-      await expect(repo.create(entry)).resolves.toEqual(entry)
-      await expect(
-        repo.update(entry.id, { title: 'Changed' })
-      ).resolves.toEqual({
-        ...entry,
-        title: 'Changed'
-      })
       await expect(repo.read(entry.id)).resolves.toEqual({
         ...entry,
         title: 'Changed'
@@ -142,7 +121,7 @@ export default function (repo: IEntryRepository) {
     })
 
     it('deletes an etry', async () => {
-      await expect(repo.create(entry)).resolves.toEqual(entry)
+      await expect(repo.create(entry.id, entry)).resolves.toEqual(entry)
       await expect(repo.delete(entry.id)).resolves.toEqual(entry.id)
     })
 
@@ -166,7 +145,7 @@ export default function (repo: IEntryRepository) {
             noteId: generateId()
           })
         )
-        await repo.create(entries[i])
+        await repo.create(entries[i].id, entries[i])
       }
     })
 
@@ -179,26 +158,29 @@ export default function (repo: IEntryRepository) {
     it('lists entries', async () => {
       const iter = await repo.list()
       const res = await toArray(iter)
-      expect(res).toEqual(entries)
+      expect(res).toHaveLength(entries.length)
+      res.forEach(r => {
+        const entry = entries.find(e => e.id === r.id)
+        expect(r).toEqual(entry)
+      })
     })
 
     it('supports limit', async () => {
       const iter = await repo.list({ limit: 5 })
       const res = await toArray(iter)
       expect(res).toHaveLength(5)
-      expect(res).toEqual(entries.slice(0, 5))
     })
 
     it('supports offset', async () => {
       const iter = await repo.list({ offset: 5 })
       const res = await toArray(iter)
-      expect(res).toEqual(entries.slice(5))
+      expect(res).toHaveLength(5)
     })
 
     it('supports offset and limit', async () => {
       const iter = await repo.list({ offset: 5, limit: 2 })
       const res = await toArray(iter)
-      expect(res).toEqual(entries.slice(5, 7))
+      expect(res).toHaveLength(2)
     })
 
     it('supports sort', async () => {
@@ -211,7 +193,7 @@ export default function (repo: IEntryRepository) {
       expect(resDesc).toEqual(R.reverse(entries))
     })
 
-    it('performs sort and then limit', async () => {
+    it('supports sort and limit', async () => {
       const iterAsc = await repo.list({ sort: { title: 1 }, limit: 5 })
       const resAsc = await toArray(iterAsc)
       expect(resAsc).toEqual(entries.slice(0, 5))
@@ -247,7 +229,7 @@ export default function (repo: IEntryRepository) {
           userEntries.push(entries[i])
         }
 
-        await repo.create(entries[i])
+        await repo.create(entries[i].id, entries[i])
       }
     })
 
@@ -260,7 +242,11 @@ export default function (repo: IEntryRepository) {
     it('lists user entries', async () => {
       const iter = await repo.listByUser(userId)
       const res = await toArray(iter)
-      expect(res).toEqual(userEntries)
+      expect(res).toHaveLength(10)
+      res.forEach(r => {
+        const entry = entries.find(e => e.id === r.id)
+        expect(r).toEqual(entry)
+      })
 
       const iterNone = await repo.listByUser('test')
       const resNone = await toArray(iterNone)
@@ -271,19 +257,18 @@ export default function (repo: IEntryRepository) {
       const iter = await repo.listByUser(userId, { limit: 5 })
       const res = await toArray(iter)
       expect(res).toHaveLength(5)
-      expect(res).toEqual(userEntries.slice(0, 5))
     })
 
     it('supports offset', async () => {
       const iter = await repo.listByUser(userId, { offset: 5 })
       const res = await toArray(iter)
-      expect(res).toEqual(userEntries.slice(5))
+      expect(res).toHaveLength(5)
     })
 
     it('supports offset and limit', async () => {
       const iter = await repo.listByUser(userId, { offset: 5, limit: 2 })
       const res = await toArray(iter)
-      expect(res).toEqual(userEntries.slice(5, 7))
+      expect(res).toHaveLength(2)
     })
 
     it('supports sort', async () => {
@@ -296,7 +281,7 @@ export default function (repo: IEntryRepository) {
       expect(resDesc).toEqual(R.reverse(userEntries))
     })
 
-    it('performs sort and then limit', async () => {
+    it('supports sort and limit', async () => {
       const iterAsc = await repo.listByUser(userId, {
         sort: { title: 1 },
         limit: 5

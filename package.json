@@ -9,6 +9,7 @@
     "dev": "npm-run-all --parallel watch:*",
     "watch:build": "tsc --watch",
     "watch:start": "nodemon --watch dist --exec 'npm start'",
+    "watch:test": "jest --watch",
     "clean": "rm -rf dist/"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "helmet": "^4.4.1",
     "http-errors": "^1.6.3",
     "morgan": "~1.9.1",
+    "nedb-promises": "^4.1.2",
     "ramda": "^0.27.1",
     "xid": "0.0.2"
   },

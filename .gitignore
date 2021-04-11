@@ -1,5 +1,7 @@
 # Custom
 dist/
+data/
+test-data/
 
 # Logs
 logs
