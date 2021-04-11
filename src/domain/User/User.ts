@@ -4,6 +4,7 @@ import { ID } from '../util/id'
 export type UserSpec = {
   id: ID
   email: string
+  password: string
   firstName: string
   lastName: string
   createdAt?: Date
@@ -13,6 +14,7 @@ export type UserSpec = {
 export class User implements IEntity {
   readonly id: ID
   readonly email: string
+  readonly password: string
   readonly firstName: string
   readonly lastName: string
   readonly createdAt: Date
@@ -21,6 +23,7 @@ export class User implements IEntity {
   constructor(spec: UserSpec) {
     this.id = spec.id
     this.email = spec.email
+    this.password = spec.password
     this.firstName = spec.firstName
     this.lastName = spec.lastName
     this.createdAt = spec.createdAt || new Date()

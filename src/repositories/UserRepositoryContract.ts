@@ -11,6 +11,7 @@ export default function (repo: IUserRepository) {
     const user: User = new User({
       id: generateId(),
       email: 'test@user.com',
+      password: 'pass',
       firstName: 'Test',
       lastName: 'User'
     })
@@ -40,6 +41,7 @@ export default function (repo: IUserRepository) {
     const user: User = new User({
       id: generateId(),
       email: 'test@user.com',
+      password: 'pass',
       firstName: 'Test',
       lastName: 'User'
     })
@@ -67,6 +69,7 @@ export default function (repo: IUserRepository) {
     const user: User = new User({
       id: generateId(),
       email: 'test@user.com',
+      password: 'pass',
       firstName: 'Test',
       lastName: 'User'
     })
@@ -105,6 +108,7 @@ export default function (repo: IUserRepository) {
     const user: User = new User({
       id: generateId(),
       email: 'test@user.com',
+      password: 'pass',
       firstName: 'Test',
       lastName: 'User'
     })
@@ -143,6 +147,7 @@ export default function (repo: IUserRepository) {
     const user: User = new User({
       id: generateId(),
       email: 'test@user.com',
+      password: 'pass',
       firstName: 'Test',
       lastName: 'User'
     })
@@ -168,6 +173,7 @@ export default function (repo: IUserRepository) {
           new User({
             id: generateId(),
             email: 'test@user.com',
+            password: 'pass',
             firstName: 'Test',
             lastName: `User ${i}`
           })
