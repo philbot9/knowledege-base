@@ -65,6 +65,34 @@ export default function (repo: IUserRepository) {
     })
   })
 
+  describe('findByEmail', () => {
+    const user: User = new User({
+      id: generateId(),
+      email: 'test@user.com',
+      password: 'pass',
+      firstName: 'Test',
+      lastName: 'User'
+    })
+
+    afterEach(async () => {
+      try {
+        await repo.delete(user.id)
+      } catch (e) {}
+    })
+
+    it('finds a user', async () => {
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
+      await expect(repo.findByEmail(user.email)).resolves.toEqual(user)
+    })
+
+    it('fails if user does not exist', async () => {
+      expect.assertions(1)
+      await repo.findByEmail('nosuch@user.com').catch((e: IException) => {
+        expect(e.name).toBe('RecordNotFound')
+      })
+    })
+  })
+
   describe('update', () => {
     const user: User = new User({
       id: generateId(),

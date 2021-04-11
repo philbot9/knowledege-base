@@ -4,6 +4,7 @@ import R from 'ramda'
 import { User, UserSpec } from '../domain/User/User'
 import { IUserRepository } from '../domain/User/IUserRepository'
 import { NedbRepository } from '../nedb/NedbRepository'
+import { RecordNotFoundException } from '../domain/exceptions/RecordNotFoundException'
 
 export class UserDiskRepository
   extends NedbRepository<User>
@@ -17,6 +18,14 @@ export class UserDiskRepository
       fieldName: 'id',
       unique: true
     })
+  }
+
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.db.findOne({ email })
+    if (!user) {
+      throw new RecordNotFoundException('No such user')
+    }
+    return this.buildRecord(user)
   }
 
   protected buildRecord(data: object): User {
