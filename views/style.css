@@ -123,3 +123,11 @@ label {
   position: relative;
   text-align: left;
 }
+
+main {
+  padding-top: 6rem;
+}
+
+.content {
+  padding-top: 1rem;
+}

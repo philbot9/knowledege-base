@@ -4,8 +4,10 @@
   <body>
     <%- include('partials/header') %>
 
-    <main style="padding-top: 2rem">
-      <div class="container">
+    <main>
+      <%- include('partials/breadcrumb', { breadcrumb: breadcrumb }) %>
+
+      <div class="content container">
         <div class="row">
           <div class="column column-50 column-offset-25">
             <%- include('partials/registration-form', { values: values,

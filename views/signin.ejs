@@ -3,9 +3,10 @@
   <%- include('partials/head') %>
   <body>
     <%- include('partials/header') %>
+    <main>
+      <%- include('partials/breadcrumb', { breadcrumb: breadcrumb }) %>
 
-    <main style="padding-top: 2rem">
-      <div class="container">
+      <div class="content container">
         <div class="row">
           <div class="column column-50 column-offset-25">
             <%- include('partials/login-form', { error: null, values: {} }) %>

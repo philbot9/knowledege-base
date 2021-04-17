@@ -1,0 +1,10 @@
+.breadcrumb {
+  width: 100%;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  text-align: center;
+  font-size: 12pt;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  border-bottom: 0.1rem solid var(--color-tertiary);
+}

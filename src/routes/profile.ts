@@ -1,9 +1,9 @@
 import express, { Router } from 'express'
 import { viewGlobals } from '../util/view-globals'
 
-export type IndexRouterArgs = {}
+export type ProfileRouterArgs = {}
 
-export function indexRouter(args: IndexRouterArgs): Router {
+export function profileRouter(args: ProfileRouterArgs): Router {
   const router = express.Router()
 
   router.use((req, res, next) => {
@@ -15,9 +15,9 @@ export function indexRouter(args: IndexRouterArgs): Router {
 
   /* GET home page. */
   router.get('/', function (req, res) {
-    res.render('index', {
+    res.render('profile', {
       title: viewGlobals.appName + ' - Home',
-      breadcrumb: 'Home'
+      breadcrumb: 'Profile'
     })
   })
 

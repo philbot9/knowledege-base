@@ -15,6 +15,7 @@ import { UserRegistration } from './domain/User/UserRegistration'
 import { Crypto } from './domain/util/Crypto'
 import { UserAuthentication } from './domain/User/UserAuthentication'
 import { signupRouter } from './routes/signup'
+import { profileRouter } from './routes/profile'
 
 export async function buildApp() {
   const app = setupExpressApp()
@@ -47,6 +48,7 @@ export async function buildApp() {
   app.use('/signin', signinRouter({ userAuthentication }))
   app.use('/signup', signupRouter({ userRegistration }))
   app.use('/signout', signoutRouter({}))
+  app.use('/profile', profileRouter({}))
   app.use('/', indexRouter({}))
 
   installNotFoundRoute(app)
@@ -73,8 +75,8 @@ function setupExpressApp(): Application {
     cookieSession({
       name: 'session',
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-      path: 'kb/session',
-      secureProxy: !isDev(),
+      path: 'owby/session',
+      secure: !isDev(),
       httpOnly: true,
       keys: cookieKeys,
       domain

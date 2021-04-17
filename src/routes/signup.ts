@@ -19,10 +19,10 @@ export function signupRouter(args: SignupRouterArgs): Router {
     next()
   })
 
-  /* GET home page. */
   router.get('/', function (req, res, next) {
     res.render('signup', {
-      title: viewGlobals.appName + ' - Registration',
+      title: viewGlobals.appName + ' - Sign up',
+      breadcrumb: 'Sign up',
       values: {},
       error: null,
       fieldErrors: {}

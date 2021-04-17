@@ -17,10 +17,10 @@ export function signinRouter(args: SigninRouterArgs): Router {
     next()
   })
 
-  /* GET home page. */
   router.get('/', function (req, res, next) {
     res.render('signin', {
-      title: viewGlobals.appName + ' - Login',
+      title: viewGlobals.appName + ' - Sign in',
+      breadcrumb: 'Sign in',
       values: {},
       error: null
     })
