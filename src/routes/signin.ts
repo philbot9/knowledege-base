@@ -13,5 +13,7 @@ export function signinRouter(args: SigninRouterArgs): Router {
     res.render('signin', { title: 'Owby', user: null })
   })
 
+  router.post('/', (req, res) => {})
+
   return router
 }

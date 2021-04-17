@@ -28,6 +28,11 @@ export class UserDiskRepository
     return this.buildRecord(user)
   }
 
+  async isEmailInUse(email: string): Promise<boolean> {
+    const count = await this.db.count({ email })
+    return count > 0
+  }
+
   protected buildRecord(data: object): User {
     const spec = R.omit(['_id'], data) as UserSpec
     return new User(spec)

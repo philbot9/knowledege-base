@@ -275,4 +275,30 @@ export default function (repo: IUserRepository) {
       expect(res).toEqual(R.reverse(users).slice(5, 7))
     })
   })
+
+  describe('isEmailInUse', () => {
+    const user: User = new User({
+      id: generateId(),
+      email: 'test@user.com',
+      password: 'pass',
+      firstName: 'Test',
+      lastName: 'User'
+    })
+
+    afterEach(async () => {
+      try {
+        await repo.delete(user.id)
+      } catch (e) {}
+    })
+
+    it('finds email in use', async () => {
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
+      await expect(repo.isEmailInUse(user.email)).resolves.toEqual(true)
+    })
+
+    it('finds email not in use', async () => {
+      await expect(repo.create(user.id, user)).resolves.toEqual(user)
+      await expect(repo.isEmailInUse('some@email.com')).resolves.toEqual(false)
+    })
+  })
 }

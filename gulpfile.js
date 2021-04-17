@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const { src, dest, series } = require('gulp')
+const { src, dest, watch, series } = require('gulp')
 const concat = require('gulp-concat')
 const uglify = require('gulp-uglify')
 const uglifycss = require('gulp-uglifycss')
@@ -24,4 +24,9 @@ function buildCss() {
     .pipe(dest('public/css/'))
 }
 
-exports.default = series(buildJs, buildCss)
+exports.default = function () {
+  series(buildCss, buildJs)
+
+  watch(['views/*.css', 'views/**/*.css'], buildCss)
+  watch(['views/*.js', 'views/**/*.js'], buildJs)
+}

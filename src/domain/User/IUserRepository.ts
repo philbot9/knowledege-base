@@ -9,4 +9,5 @@ export interface IUserRepository {
   update(id: ID, patch: object): Promise<User>
   delete(id: ID): Promise<ID>
   list(args?: ListArgs): Promise<AsyncIterable<User>>
+  isEmailInUse(email: string): Promise<boolean>
 }
