@@ -1,4 +1,4 @@
-export interface IException {
+export interface IException extends Error {
   code: number
   name: string
 }

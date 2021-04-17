@@ -2,14 +2,14 @@ import { mock } from 'jest-mock-extended'
 import { IUserRepository } from './IUserRepository'
 import { User } from './User'
 import { Crypto } from '../util/Crypto'
-import { UserAuth } from './UserAuth'
+import { UserAuthentication } from './UserAuthentication'
 import { AuthenticationException } from '../exceptions/AuthenticationException'
 import { RecordNotFoundException } from '../exceptions/RecordNotFoundException'
 
-describe('UserAuth', () => {
+describe('UserAuthentication', () => {
   const userRepo = mock<IUserRepository>()
   const crypto = mock<Crypto>()
-  const userAuth = new UserAuth({ userRepo, crypto })
+  const userAuthentication = new UserAuthentication({ userRepo, crypto })
 
   const user = new User({
     id: 'abc',
@@ -25,7 +25,10 @@ describe('UserAuth', () => {
       crypto.compare.mockResolvedValueOnce(true)
 
       await expect(
-        userAuth.authenticate({ email: 'test@user.com', password: 'plain' })
+        userAuthentication.authenticate({
+          email: 'test@user.com',
+          password: 'plain'
+        })
       ).resolves.toEqual(user)
       expect(userRepo.findByEmail).toHaveBeenCalledWith('test@user.com')
       expect(crypto.compare).toHaveBeenCalledWith('hashed', 'plain')
@@ -38,7 +41,7 @@ describe('UserAuth', () => {
       crypto.compare.mockResolvedValueOnce(true)
 
       expect.assertions(1)
-      await userAuth
+      await userAuthentication
         .authenticate({ email: 'test@user.com', password: 'plain' })
         .catch((e: AuthenticationException) => {
           expect(e.name).toBe('AuthenticationFailed')
@@ -50,7 +53,7 @@ describe('UserAuth', () => {
       crypto.compare.mockResolvedValueOnce(false)
 
       expect.assertions(1)
-      await userAuth
+      await userAuthentication
         .authenticate({ email: 'test@user.com', password: 'plain' })
         .catch((e: AuthenticationException) => {
           expect(e.name).toBe('AuthenticationFailed')

@@ -7,14 +7,47 @@ import logger from 'morgan'
 
 import { indexRouter } from './routes/index'
 import { signinRouter } from './routes/signin'
+import { signoutRouter } from './routes/signout'
 import { isDev } from './util/is-dev'
 import { config } from './util/config'
+import { UserDiskRepository } from './repositories/UserDiskRepository'
+import { UserRegistration } from './domain/User/UserRegistration'
+import { Crypto } from './domain/util/Crypto'
+import { UserAuthentication } from './domain/User/UserAuthentication'
+import { signupRouter } from './routes/signup'
 
 export async function buildApp() {
   const app = setupExpressApp()
 
+  const crypto = new Crypto()
+  const userRepo = new UserDiskRepository()
+  const userRegistration = new UserRegistration({
+    userRepo,
+    crypto
+  })
+  const userAuthentication = new UserAuthentication({
+    userRepo,
+    crypto
+  })
+
+  app.use(async (req, res, next) => {
+    if (req.session?.userId && !res.locals.user) {
+      try {
+        res.locals.user = await userRepo.read(req.session.userId)
+      } catch (e) {
+        req.session = null
+        res.redirect('/signin')
+      }
+    } else {
+      res.locals.user = null
+    }
+    next()
+  })
+
+  app.use('/signin', signinRouter({ userAuthentication }))
+  app.use('/signup', signupRouter({ userRegistration }))
+  app.use('/signout', signoutRouter({}))
   app.use('/', indexRouter({}))
-  app.use('/signin', signinRouter({}))
 
   installNotFoundRoute(app)
   installErrorRoute(app)

@@ -2,29 +2,22 @@ import { generateId, ID } from '../util/id'
 import { IUserRepository } from './IUserRepository'
 import { FormException } from '../exceptions/FormException'
 import { RegistrationException } from '../exceptions/RegistrationException'
-import { IException } from '../exceptions/IException'
 import { User } from './User'
 import { Crypto } from '../util/Crypto'
+import {
+  IUserRegistration,
+  UserRegistrationData,
+  UserRegistrationResult
+} from './IUserRegistration'
+import { isEmailValid } from '../util/email'
+import { FormValidationException } from '../exceptions/FormValidationException'
 
 export type UserRegistrationSpec = {
   userRepo: IUserRepository
   crypto: Crypto
 }
 
-export type UserRegistrationData = {
-  email: string
-  password: string
-  passwordConfirmation: string
-  firstName: string
-  lastName: string
-}
-
-export type UserRegistrationResult = {
-  errors?: IException[]
-  user?: User
-}
-
-export class UserRegistration {
+export class UserRegistration implements IUserRegistration {
   userRepo: IUserRepository
   crypto: Crypto
 
@@ -34,7 +27,7 @@ export class UserRegistration {
   }
 
   async register(data: UserRegistrationData): Promise<UserRegistrationResult> {
-    const errors = this.runValidations(
+    const formErrors = this.runValidations(
       () => this.validateEmail(data.email),
       () => this.validatePassword(data.password, data.passwordConfirmation),
       () =>
@@ -49,14 +42,20 @@ export class UserRegistration {
         )
     )
 
-    if (errors.length) {
-      return { errors }
+    if (formErrors.length) {
+      return {
+        success: false,
+        error: new FormValidationException('Registration failed'),
+        formErrors
+      }
     }
 
     const emailIsInUse = await this.userRepo.isEmailInUse(data.email)
     if (emailIsInUse) {
       return {
-        errors: [
+        success: false,
+        error: new FormValidationException('Registration failed'),
+        formErrors: [
           new FormException({
             name: 'EmailAlreadyInUse',
             message: 'Email already in use',
@@ -80,18 +79,17 @@ export class UserRegistration {
       await this.userRepo.create(user.id, user)
     } catch (e) {
       return {
-        errors: [
-          new RegistrationException(
-            'Registration failed due to an internal error'
-          )
-        ]
+        success: false,
+        error: new RegistrationException(
+          'Registration failed due to an internal error'
+        )
       }
     }
 
-    return { user }
+    return { success: true, user }
   }
 
-  private runValidations(...validations: Function[]): IException[] {
+  private runValidations(...validations: Function[]): FormException[] {
     let errors = []
     for (const validation of validations) {
       try {
@@ -105,11 +103,7 @@ export class UserRegistration {
   }
 
   private validateEmail(email: string): boolean {
-    const isValid = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/.test(
-      email
-    )
-
-    if (!isValid) {
+    if (!isEmailValid(email)) {
       throw new FormException({
         name: 'InvalidEmail',
         message: 'Invalid email format',
@@ -117,7 +111,7 @@ export class UserRegistration {
       })
     }
 
-    return isValid
+    return true
   }
 
   private validatePassword(password: string, confirmation: string): boolean {

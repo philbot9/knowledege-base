@@ -1,0 +1,52 @@
+<form hx-post="/signin">
+  <fieldset>
+    <div class="container">
+      <% if (error) { %>
+      <div class="row">
+        <div class="column">
+          <%- include('alert', { type: 'danger', title: error }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <div class="row">
+        <div class="column">
+          <label for="emailField">Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            id="emailField"
+            required
+            value="<%- values.email %>"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column">
+          <label for="passwordField">Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            id="passwordField"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column" style="text-align: center">
+          <input class="button" type="submit" value="Sign in" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column" style="text-align: center">
+          Don't have an account? <a href="/signup">Sign up</a>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+</form>

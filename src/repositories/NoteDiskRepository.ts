@@ -9,7 +9,7 @@ export class NoteDiskRepository
   extends NedbRepository<Note>
   implements INoteRepository {
   constructor(db?: Datastore) {
-    super('Entry', db)
+    super('Note', db)
   }
 
   async prepare(): Promise<void> {

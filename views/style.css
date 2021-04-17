@@ -6,6 +6,10 @@
   --color-secondary: #b5b5b5;
   --color-tertiary: #efefef;
   --color-quaternary: #000;
+  --color-success: #03a87c;
+  --color-warning: #f8d64e;
+  --color-danger: #df3636;
+  --color-background-danger: #fbe1e1;
   --color-highlight: #03a87c;
   --color-star: #f8d64e;
   --color-applause: #03a87c;
@@ -83,6 +87,34 @@ textarea:focus {
   background-color: var(--color-tertiary);
   border-color: var(--color-secondary);
   color: var(--color-primary);
+}
+
+input[type='email'] + .form-field-error,
+input[type='number'] + .form-field-error,
+input[type='password'] + .form-field-error,
+input[type='search'] + .form-field-error,
+input[type='tel'] + .form-field-error,
+input[type='text'] + .form-field-error,
+input[type='url'] + .form-field-error,
+select + .form-field-error,
+textarea + .form-field-error {
+  margin-top: -1.5rem;
+  margin-bottom: 1rem;
+  display: block;
+  font-size: 10pt;
+  color: var(--color-danger);
+}
+
+input[type='email'].has-error,
+input[type='number'].has-error,
+input[type='password'].has-error,
+input[type='search'].has-error,
+input[type='tel'].has-error,
+input[type='text'].has-error,
+input[type='url'].has-error,
+select.has-error,
+textarea.has-error {
+  border-color: var(--color-danger);
 }
 
 label {

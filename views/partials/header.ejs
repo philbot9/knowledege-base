@@ -8,7 +8,7 @@
       </div>
 
       <div class="column column-75">
-        <% if (user) { %>
+        <% if (locals._locals.user) { %>
         <form class="search">
           <input
             class="search-input"
@@ -35,19 +35,18 @@
             </a>
           </div>
 
+          <% if (locals._locals.user) { %>
           <div class="nav-item">
-            <% if (user) { %>
             <a href="/profile">
               <i data-eva="person"></i>
             </a>
           </div>
           <div class="nav-item">
-            <% } else { %>
-            <a href="/signin">
-              <i data-eva="log-in"></i>
+            <a href="/signout">
+              <i data-eva="log-out"></i>
             </a>
-            <% } %>
           </div>
+          <% } %>
         </nav>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { AuthenticationException } from '../exceptions/AuthenticationException'
 import { RecordNotFoundException } from '../exceptions/RecordNotFoundException'
 import { Crypto } from '../util/Crypto'
+import { IUserAuthentication } from './IUserAuthentication'
 import { IUserRepository } from './IUserRepository'
 import { User } from './User'
 
@@ -13,7 +14,7 @@ export type UserAuthSpec = {
   crypto: Crypto
 }
 
-export class UserAuth {
+export class UserAuthentication implements IUserAuthentication {
   userRepo: IUserRepository
   crypto: Crypto
 

@@ -1,0 +1,18 @@
+.alert {
+  padding: 1rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.alert h3 {
+  font-size: 12pt;
+  font-weight: var(--font-bold);
+  margin-bottom: 0;
+}
+
+.alert.danger {
+  color: var(--color-danger);
+  background: var(--color-background-danger);
+}

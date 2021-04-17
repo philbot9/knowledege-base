@@ -1,8 +1,6 @@
 import { mock } from 'jest-mock-extended'
 import R from 'ramda'
 
-import { FormException } from '../exceptions/FormException'
-import { RegistrationException } from '../exceptions/RegistrationException'
 import { Crypto } from '../util/Crypto'
 import { IUserRepository } from './IUserRepository'
 import { UserRegistration } from './UserRegistration'
@@ -37,11 +35,12 @@ describe('UserRegistration', () => {
 
       const result = await r.register(userData)
 
-      expect(result.errors).toBeUndefined()
-      expect(result.user).toMatchObject(
+      const user = result.success ? result.user : null
+      expect(result.success).toBe(true)
+      expect(user).toMatchObject(
         R.omit(['passwordConfirmation', 'password'], userData)
       )
-      expect(result.user?.password).toEqual('hashedpassword')
+      expect(user?.password).toEqual('hashedpassword')
       expect(crypto.hash).toHaveBeenCalledWith(userData.password)
       expect(userRepo.isEmailInUse).toHaveBeenCalledWith(userData.email)
       expect(userRepo.create.mock.calls[0][1]).toMatchObject({
@@ -54,20 +53,32 @@ describe('UserRegistration', () => {
 
     it('returns an error on invalid email', async () => {
       const result = await r.register({ ...userData, email: 'invalid!' })
-      expect(result.errors).toHaveLength(1)
+
+      const formErrors = result.success ? null : result.formErrors
+      const error = result.success ? null : result.error
+
+      expect(result.success).toBe(false)
+      expect(formErrors).toHaveLength(1)
+      expect(error?.name).toBe('FormValidationFailed')
       expect(userRepo.create).not.toHaveBeenCalledWith()
 
-      const e = result.errors![0] as FormException
-      expect(e.name).toBe('InvalidEmail')
-      expect(e.fieldName).toBe('email')
+      const fe = formErrors![0]
+      expect(fe.name).toBe('InvalidEmail')
+      expect(fe.fieldName).toBe('email')
     })
 
     it('returns an error on invalid password', async () => {
       const result = await r.register({ ...userData, password: '' })
-      expect(result.errors).toHaveLength(1)
+      const formErrors = result.success ? null : result.formErrors
+      const error = result.success ? null : result.error
+
+      expect(result.success).toBe(false)
+      expect(formErrors).toHaveLength(1)
+      expect(error?.name).toBe('FormValidationFailed')
+
       expect(userRepo.create).not.toHaveBeenCalledWith()
 
-      const e = result.errors![0] as FormException
+      const e = formErrors![0]
       expect(e.name).toBe('PasswordTooShort')
       expect(e.fieldName).toBe('password')
     })
@@ -78,30 +89,48 @@ describe('UserRegistration', () => {
         password: 'abcdef',
         passwordConfirmation: 'defghi'
       })
-      expect(result.errors).toHaveLength(1)
+      const formErrors = result.success ? null : result.formErrors
+      const error = result.success ? null : result.error
+
+      expect(result.success).toBe(false)
+      expect(formErrors).toHaveLength(1)
+      expect(error?.name).toBe('FormValidationFailed')
+
       expect(userRepo.create).not.toHaveBeenCalledWith()
 
-      const e = result.errors![0] as FormException
+      const e = formErrors![0]
       expect(e.name).toBe('PasswordsDontMatch')
       expect(e.fieldName).toBe('passwordConfirmation')
     })
 
     it('returns an error on invalid firstName', async () => {
       const result = await r.register({ ...userData, firstName: '!_)#!' })
-      expect(result.errors).toHaveLength(1)
+      const formErrors = result.success ? null : result.formErrors
+      const error = result.success ? null : result.error
+
+      expect(result.success).toBe(false)
+      expect(formErrors).toHaveLength(1)
+      expect(error?.name).toBe('FormValidationFailed')
+
       expect(userRepo.create).not.toHaveBeenCalledWith()
 
-      const e = result.errors![0] as FormException
+      const e = formErrors![0]
       expect(e.name).toBe('InvalidCharacters')
       expect(e.fieldName).toBe('firstName')
     })
 
     it('returns an error on invalid firstName', async () => {
       const result = await r.register({ ...userData, lastName: '!_)#!' })
-      expect(result.errors).toHaveLength(1)
+      const formErrors = result.success ? null : result.formErrors
+      const error = result.success ? null : result.error
+
+      expect(result.success).toBe(false)
+      expect(formErrors).toHaveLength(1)
+      expect(error?.name).toBe('FormValidationFailed')
+
       expect(userRepo.create).not.toHaveBeenCalledWith()
 
-      const e = result.errors![0] as FormException
+      const e = formErrors![0]
       expect(e.name).toBe('InvalidCharacters')
       expect(e.fieldName).toBe('lastName')
     })
@@ -109,10 +138,16 @@ describe('UserRegistration', () => {
     it('returns an error if email is already in use', async () => {
       userRepo.isEmailInUse.mockResolvedValueOnce(true)
       const result = await r.register(userData)
-      expect(result.errors).toHaveLength(1)
+      const formErrors = result.success ? null : result.formErrors
+      const error = result.success ? null : result.error
+
+      expect(result.success).toBe(false)
+      expect(formErrors).toHaveLength(1)
+      expect(error?.name).toBe('FormValidationFailed')
+
       expect(userRepo.create).not.toHaveBeenCalledWith()
 
-      const e = result.errors![0] as FormException
+      const e = formErrors![0]
       expect(e.name).toBe('EmailAlreadyInUse')
       expect(e.fieldName).toBe('email')
     })
@@ -120,17 +155,19 @@ describe('UserRegistration', () => {
     it('returns an error if creating user fails', async () => {
       userRepo.create.mockRejectedValue(new Error('some error'))
       const result = await r.register(userData)
-      expect(result.errors).toHaveLength(1)
-      expect(userRepo.create).not.toHaveBeenCalledWith()
+      const error = result.success ? null : result.error
 
-      const e = result.errors![0] as RegistrationException
-      expect(e.name).toBe('RegistrationFailed')
+      expect(result.success).toBe(false)
+      expect(error?.name).toBe('RegistrationFailed')
+      expect(userRepo.create).toHaveBeenCalled()
     })
 
     it('returns multiple errors', async () => {
       // @ts-ignore
       const result = await r.register({})
-      expect(result.errors?.length).toBeGreaterThan(1)
+      const formErrors = result.success ? null : result.formErrors
+      expect(result.success).toBe(false)
+      expect(formErrors?.length).toBeGreaterThan(1)
     })
   })
 })

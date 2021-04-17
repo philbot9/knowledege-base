@@ -10,7 +10,7 @@ export class UserDiskRepository
   extends NedbRepository<User>
   implements IUserRepository {
   constructor(db?: Datastore) {
-    super('Entry', db)
+    super('User', db)
   }
 
   async prepare(): Promise<void> {

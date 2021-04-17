@@ -1,0 +1,123 @@
+<form hx-post="/signup">
+  <fieldset>
+    <div class="container">
+      <% if (error) { %>
+      <div class="row">
+        <div class="column">
+          <%- include('alert', { type: 'danger', title: error }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <div class="row">
+        <div class="column">
+          <label for="firstNameField">First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            id="firstNameField"
+            required
+            value="<%- values.firstName %>"
+            class="<%- fieldErrors.firstName ? 'has-error' : '' %>"
+          />
+          <% if (fieldErrors.firstName) { %>
+          <span class="form-field-error">
+            <%- fieldErrors.firstName.message %>
+          </span>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column">
+          <label for="lastNameField">Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            placeholder="First Name"
+            id="lastNameField"
+            required
+            value="<%- values.lastName %>"
+            class="<%- fieldErrors.lastName ? 'has-error' : '' %>"
+          />
+          <% if (fieldErrors.lastName) { %>
+          <span class="form-field-error">
+            <%- fieldErrors.lastName.message %>
+          </span>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column">
+          <label for="emailField">Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            id="emailField"
+            required
+            value="<%- values.email %>"
+            class="<%- fieldErrors.email ? 'has-error' : '' %>"
+          />
+          <% if (fieldErrors.email) { %>
+          <span class="form-field-error">
+            <%- fieldErrors.email.message %>
+          </span>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column">
+          <label for="passwordField">Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            id="passwordField"
+            required
+            class="<%- fieldErrors.password ? 'has-error' : '' %>"
+          />
+          <% if (fieldErrors.password) { %>
+          <span class="form-field-error">
+            <%- fieldErrors.password.message %>
+          </span>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column">
+          <label for="passwordConfirmationField">Confirm Password</label>
+          <input
+            type="password"
+            name="passwordConfirmation"
+            placeholder="Confirm Password"
+            id="passwordConfirmationField"
+            required
+            class="<%- fieldErrors.passwordConfirmation ? 'has-error' : '' %>"
+          />
+          <% if (fieldErrors.passwordConfirmation) { %>
+          <span class="form-field-error">
+            <%- fieldErrors.passwordConfirmation.message %>
+          </span>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column" style="text-align: center">
+          <input class="button" type="submit" value="Sign up" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column" style="text-align: center">
+          Already have an account? <a href="/signin">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+</form>
