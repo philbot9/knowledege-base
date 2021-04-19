@@ -31,11 +31,14 @@ export class UserAuthentication implements IUserAuthentication {
 
     try {
       user = await this.userRepo.findByEmail(creds.email)
-      if (!user) throw new RecordNotFoundException('No such user')
     } catch (e) {
       // pretend we do a comparison to prevent timing attacks
       await this.crypto.compare(DUMMY_HASH, DUMMY_PASSWORD)
       throw new AuthenticationException('Invalid email of password')
+    }
+
+    if (!user) {
+      throw new RecordNotFoundException('No such user')
     }
 
     const validPw = await this.crypto.compare(user.password, creds.password)
